@@ -1,0 +1,90 @@
+<%- include('partials/header.ejs') %>
+
+<%- include('partials/navbar.ejs') %>
+
+<div class="container">
+    <h3 class="mt-5">Enter Id to add Restaurant</h3>
+    <h3>Title</h3>
+
+<form action="/addRestaurants" method="post">
+    <label for="building">Building:</label>
+    <input type="text" id="building" name="building" required><br>
+
+    <label for="longitude">Longitude:</label>
+    <input type="text" id="longitude" name="longitude" required><br>
+
+    <label for="latitude">Latitude:</label>
+    <input type="text" id="latitude" name="latitude" required><br>
+
+    <label for="street">Street:</label>
+    <input type="text" id="street" name="street" required><br>
+
+    <label for="zipcode">Zipcode:</label>
+    <input type="text" id="zipcode" name="zipcode" required><br>
+
+    <label for="borough">Borough:</label>
+    <input type="text" id="borough" name="borough" required><br>
+
+    <label for="cuisine">Cuisine:</label>
+    <input type="text" id="cuisine" name="cuisine" required><br>
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br>
+
+    <label for="restaurant_id">Restaurant ID:</label>
+    <input type="text" id="restaurant_id" name="restaurant_id" required><br>
+
+    <div id="grades-container">
+        <div class="grade">
+            <label for="grade1_date">Grade Date:</label>
+            <input type="datetime-local" name="grades[][date]" required>
+
+            <label for="grade1_grade">Grade:</label>
+            <input type="text" name="grades[][grade]" required>
+
+            <label for="grade1_score">Score:</label>
+            <input type="text" name="grades[][score]" required>
+        </div>
+    </div>
+    <button type="button" id="add-grade">Add Grade</button>
+    <button type="button" id="remove-grade">Remove Grade</button>
+    <button type="submit">Add Restaurant</button>
+</form>
+
+<div class="container mt-5">
+        <h4><%= message %></h4>
+</div>
+
+
+</div>
+
+<script>
+    document.getElementById('add-grade').addEventListener('click', function() {
+        const gradesContainer = document.getElementById('grades-container');
+        const newGrade = document.createElement('div');
+        newGrade.classList.add('grade');
+
+        newGrade.innerHTML = `
+            <label for="grade_date">Grade Date:</label>
+            <input type="datetime-local" name="grades[][date]" required>
+
+            <label for="grade_grade">Grade:</label>
+            <input type="text" name="grades[][grade]" required>
+
+            <label for="grade_score">Score:</label>
+            <input type="text" name="grades[][score]" required>
+        `;
+
+        gradesContainer.appendChild(newGrade);
+    });
+
+    document.getElementById('remove-grade').addEventListener('click', function() {
+        const gradesContainer = document.getElementById('grades-container');
+        const lastGrade = gradesContainer.lastElementChild;
+
+        if (lastGrade && lastGrade.classList.contains('grade')) {
+            gradesContainer.removeChild(lastGrade);
+        }
+    });
+</script>
+<%- include('./partials/footer.ejs') %>

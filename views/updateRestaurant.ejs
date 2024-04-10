@@ -1,0 +1,59 @@
+<%- include('partials/header.ejs') %>
+
+<%- include('partials/navbar.ejs') %>
+
+<div class="container">
+    <h3 class="mt-5">Enter Id to find Restaurant</h3>
+
+<form action="/updateResturant" method="post">
+    <input type="hidden" id="id" name="id" value="<%= updateValue._id %>" >
+
+    <label for="building">Building:</label>
+    <input type="text" id="building" name="building" value="<%= updateValue.address.building %>" required><br>
+
+    <label for="longitude">Longitude:</label>
+    <input type="text" id="longitude" name="longitude" value="<%= updateValue.address.coord[0] %>" required><br>
+
+    <label for="latitude">Latitude:</label>
+    <input type="text" id="latitude" name="latitude" value="<%= updateValue.address.coord[1] %>" required><br>
+
+    <label for="street">Street:</label>
+    <input type="text" id="street" name="street" value="<%= updateValue.address.street %>" required><br>
+
+    <label for="zipcode">Zipcode:</label>
+    <input type="text" id="zipcode" name="zipcode" value="<%= updateValue.address.zipcode %>" required><br>
+
+    <label for="borough">Borough:</label>
+    <input type="text" id="borough" name="borough" value="<%= updateValue.borough %>" required><br>
+
+    <label for="cuisine">Cuisine:</label>
+    <input type="text" id="cuisine" name="cuisine" value="<%= updateValue.cuisine %>" required><br>
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" value="<%= updateValue.name %>" required><br>
+
+    <label for="restaurant_id">Restaurant ID:</label>
+    <input type="text" id="restaurant_id" value="<%= updateValue.restaurant_id %>" name="restaurant_id" required><br>
+    <div id="grades-container">
+        <% updateValue.grades.forEach((grade, index) => { %>
+            <div class="grade">
+                <label for="grade<%= index %>_date">Grade Date:</label>
+                <input type="datetime-local" name="grades[<%= index %>][date]" value="<%= grade.date.toISOString().slice(0, 16) %>" required>
+
+                <label for="grade<%= index %>_grade">Grade:</label>
+                <input type="text" name="grades[<%= index %>][grade]" value="<%= grade.grade %>" required>
+
+                <label for="grade<%= index %>_score">Score:</label>
+                <input type="text" name="grades[<%= index %>][score]" value="<%= grade.score %>" required>
+            </div>
+        <% }) %>
+    </div>
+    <!-- <button type="button" id   ="add-grade">Add Grade</button>
+    <button type="button" id="remove-grade">Remove Grade</button> -->
+    <button type="submit">Update Restaurant</button>
+</form>
+
+
+
+</div>
+<%- include('./partials/footer.ejs') %>

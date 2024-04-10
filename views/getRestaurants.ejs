@@ -1,0 +1,21 @@
+<%- include('partials/header.ejs') %>
+
+<%- include('partials/navbar.ejs') %>
+
+<div class="container">
+    <h3 class="mt-5">Enter Id to find Restaurant</h3>
+    <form action="/getRestaurants" method="post" class="mt-5">
+        <input type="text" class="form-control" name="id" placeholder="Enter Restaurant Id" required>
+        <button type="submit" class="btn btn-primary mt-3">SUBMIT</button>
+    </form>
+
+    <div class="container mt-5">
+        <% if(data) { %>
+            <h4>Name: <%= data.name %></h4>
+        <% } else { %>
+            <h4><%= message %></h4>
+        <% } %>
+    </div>
+
+</div>
+<%- include('./partials/footer.ejs') %>

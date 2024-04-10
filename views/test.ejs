@@ -1,0 +1,44 @@
+<%- include('partials/header.ejs') %>
+
+<%- include('partials/navbar.ejs') %>
+
+<div class="container">
+    <h3 class="mt-5">Find</h3>
+        <form action="/api/restaurants/find" method="get" class="mt-4">
+            <input type="number" name="page" placeholder="Enter Page*" required>
+            <input type="number" name="perPage" placeholder="Enter Per Page*" required> 
+            <input type="text" name="borough" placeholder="Enter Borough">
+            <button type="submit">Find</button>
+        </form>
+    <h3 class="mt-5">Restaurants</h3>
+    <div class="mt-4">
+        <% if(restaurants){ %>
+        <% restaurants.forEach(restaurant => { %>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title"><%= restaurant.name %></h5>
+                    <p class="card-text">Borough: <%= restaurant.borough %></p>
+                    <!-- Add more details as needed -->
+                </div>
+            </div>
+        <% }) %>
+    </div>
+
+
+    <% if (restaurants.length === 0) { %>
+        <h4>No restaurants found.</h4>
+    <% } %>
+    <% } %>
+
+    <!-- Pagination links -->
+    <div class="mt-4 mb-5">
+        <% if (prevPage !== null) { %>
+            <a href="?page=<%= prevPage %>&perPage=<%= perPage %>&borough=<%= borough %>" class="btn btn-primary mr-2">Previous</a>
+        <% } %>
+        <% if (nextPage !== null) { %>
+            <a href="?page=<%= nextPage %>&perPage=<%= perPage %>&borough=<%= borough %>" class="btn btn-primary">Next</a>
+        <% } %>
+    </div>
+</div>
+
+<%- include('partials/footer.ejs') %>

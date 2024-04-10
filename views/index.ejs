@@ -1,0 +1,47 @@
+<%- include('partials/header.ejs') %>
+
+<%- include('partials/navbar.ejs') %>
+
+<div class="container mt-5">
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Restaurant Id</th>
+            <th scope="col">Name</th>
+            <th scope="col">Borough</th>
+            <th scope="col">Cuisine</th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+            <% let counter = 1 %>
+            <% restaurants.forEach(restaurant => {  %>
+          <tr>
+            <th scope="row"><%= counter++ %></th>
+            <td>                
+                <form action="/findResturant/<%= restaurant._id %>" method="get">
+                    <a type="submit" onmouseover="this.style.color='red';" onmouseout="this.style.color='black'"><%= restaurant.restaurant_id %></a>
+                </form>
+            </td>
+            <td><%= restaurant.name %></td>
+            <td><%= restaurant.borough %></td>
+            <td><%= restaurant.cuisine %></td>
+            <td>
+                <form action="/updateResturant/<%= restaurant._id %>" method="get">
+                    <button type="submit" class="btn btn-success">UPDATE</button>
+                </form>
+            </td>
+            <td>
+                <form action="/deleteResturant/<%= restaurant._id %>" method="get">
+                    <button type="submit" class="btn btn-danger">DELETE</button>
+                </form>
+            </td>
+          </tr>          
+          <% }) %> 
+        </tbody>
+      </table>
+</div>
+
+<%- include('partials/footer.ejs') %>

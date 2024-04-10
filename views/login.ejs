@@ -1,0 +1,55 @@
+<%- include('partials/header.ejs') %>
+
+<%- include('partials/navbar.ejs') %>
+
+<div class="container">
+	<div class="row mt-5 mb-5">
+	  <div class="col-md-6 m-auto">
+	    <div class="card card-body">
+	      <h1 class="text-center mb-3"><i class="fa fa-sign-in"></i>  Login</h1>
+
+          <% if(errors.length > 0) { %>
+            <div class="alert alert-danger" role="alert">
+                <ul>
+                    <% errors.forEach(error => { %>
+                        <li><%= error %></li>
+                    <% }) %>
+                </ul>
+            </div>
+  <% } %>
+	      
+	      <form action="/login" method="post">
+	      	<!-- <input type="hidden" name="command" value="LOGIN"/> -->
+	        <div class="form-group">
+	          <label for="email">Email</label>
+	          <input
+	            type="email"
+	            id="email"
+	            name="email"
+	            class="form-control"
+	            
+	          />
+	        </div>
+	        <div class="form-group mt-3">
+	          <label for="password">Password</label>
+	          <input
+	            type="password"
+	            id="password"
+	            name="password"
+	            class="form-control"
+	            
+	          />
+	        </div>
+	        <button type="submit" class="btn btn-primary btn-block mt-3">Login</button>
+	      </form>
+	      
+	      <p class="lead mt-4">
+	        No Account? <a href="/register">Register</a>
+	      </p>
+	    </div>
+	  </div>
+	</div>
+</div>
+
+
+<%- include('./partials/footer.ejs') %>
