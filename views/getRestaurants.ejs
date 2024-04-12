@@ -3,10 +3,10 @@
 <%- include('partials/navbar.ejs') %>
 
 <div class="container">
-    <h3 class="mt-5">Enter Id to find Restaurant</h3>
+    <h3 class="mt-5 heading">Find <span>Restaurant</span></h3>
     <form action="/getRestaurants" method="post" class="mt-5">
         <input type="text" class="form-control" name="id" placeholder="Enter Restaurant Id" required>
-        <button type="submit" class="btn btn-primary mt-3">SUBMIT</button>
+        <button type="submit" class="btn btn-outline-secondary mt-3">SUBMIT</button>
     </form>
 
     <div class="container mt-5">

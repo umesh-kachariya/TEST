@@ -1,0 +1,48 @@
+<%- include('partials/header.ejs') %>
+
+<%- include('partials/navbar.ejs') %>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <h3 class="heading"><span>Restaurant</span> Details</h3>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Name:</strong> <%= restaurant.name %></li>
+                <li class="list-group-item"><strong>Restaurant ID:</strong> <%= restaurant.restaurant_id %></li>
+                <li class="list-group-item"><strong>Borough:</strong> <%= restaurant.borough %></li>
+                <li class="list-group-item"><strong>Cuisine:</strong> <%= restaurant.cuisine %></li>
+                <!-- Add more details as needed -->
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h3 class="heading"><span>Address</span></h3>
+            <ul class="list-group">
+                <li class="list-group-item"><strong>Building:</strong> <%= restaurant.address.building %></li>
+                <li class="list-group-item"><strong>Street:</strong> <%= restaurant.address.street %></li>
+                <li class="list-group-item"><strong>Zipcode:</strong> <%= restaurant.address.zipcode %></li>
+                <!-- Add more address details as needed -->
+            </ul>
+        </div>
+    </div>
+    <h3 class="mt-4 heading"><span>Grades</span></h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Grade</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% restaurant.grades.forEach(grade => { %>
+                <tr>
+                    <td><%= grade.date.toDateString() %></td>
+                    <td><%= grade.grade %></td>
+                    <td><%= grade.score %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+
+<%- include('partials/footer.ejs') %>

@@ -1,90 +1,110 @@
-<%- include('partials/header.ejs') %>
+<%- include('partials/header.ejs') %> <%- include('partials/navbar.ejs') %>
 
-<%- include('partials/navbar.ejs') %>
+        <div class="container">
+            <h3 class="mt-3 heading">Add <span>Restaurant</span></h3>
 
-<div class="container">
-    <h3 class="mt-5">Enter Id to add Restaurant</h3>
-    <h3>Title</h3>
+            <form action="/addRestaurants" method="post" class="row g-3 mt-3">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="building" name="building" placeholder="Enter building"
+                        required /><br />
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="longitude" name="longitude"
+                        placeholder="Enter longitude" required /><br />
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="latitude" placeholder="Enter latitude"
+                        required /><br />
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="street" placeholder="Enter street" required /><br />
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="zipcode" placeholder="Enter zipcode" required /><br />
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="borough" placeholder="Enter borough" required /><br />
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="cuisine" required
+                        placeholder="Enter cuisine'" /><br />
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="name" placeholder="Enter name" required /><br />
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="restaurant_id" placeholder="Enter Restaurant Id"
+                        required /><br />
+                </div>
+                <div id="grades-container">
+                    <div class="grade row">
+                        <div class="col-md-4">
+                            <label for="grade1_date">Grade Date:</label>
+                            <input type="datetime-local" class="form-control" name="grades[0][date]" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="grade1_date">Grade:</label>
+                            <input type="text" name="grades[0][grade]" class="form-control" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label for="grade1_date">Score:</label>
+                            <input type="text" name="grades[0][score]" class="form-control" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button type="button" class="btn btn-sm btn-success mt-2" id="add-grade">Add Grade</button>
+                    <button type="button" class="btn btn-sm btn-danger mt-2" id="remove-grade">Remove Grade</button>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-outline-secondary mt-2">Add Restaurant</button>
+                </div>
+            </form>
 
-<form action="/addRestaurants" method="post">
-    <label for="building">Building:</label>
-    <input type="text" id="building" name="building" required><br>
-
-    <label for="longitude">Longitude:</label>
-    <input type="text" id="longitude" name="longitude" required><br>
-
-    <label for="latitude">Latitude:</label>
-    <input type="text" id="latitude" name="latitude" required><br>
-
-    <label for="street">Street:</label>
-    <input type="text" id="street" name="street" required><br>
-
-    <label for="zipcode">Zipcode:</label>
-    <input type="text" id="zipcode" name="zipcode" required><br>
-
-    <label for="borough">Borough:</label>
-    <input type="text" id="borough" name="borough" required><br>
-
-    <label for="cuisine">Cuisine:</label>
-    <input type="text" id="cuisine" name="cuisine" required><br>
-
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required><br>
-
-    <label for="restaurant_id">Restaurant ID:</label>
-    <input type="text" id="restaurant_id" name="restaurant_id" required><br>
-
-    <div id="grades-container">
-        <div class="grade">
-            <label for="grade1_date">Grade Date:</label>
-            <input type="datetime-local" name="grades[][date]" required>
-
-            <label for="grade1_grade">Grade:</label>
-            <input type="text" name="grades[][grade]" required>
-
-            <label for="grade1_score">Score:</label>
-            <input type="text" name="grades[][score]" required>
+            <div class="container mt-5">
+                <h4>
+                    <%= message %>
+                </h4>
+            </div>
         </div>
-    </div>
-    <button type="button" id="add-grade">Add Grade</button>
-    <button type="button" id="remove-grade">Remove Grade</button>
-    <button type="submit">Add Restaurant</button>
-</form>
 
-<div class="container mt-5">
-        <h4><%= message %></h4>
-</div>
+        <script>
+            document.getElementById("add-grade").addEventListener("click", function () {
+                const gradesContainer = document.getElementById("grades-container");
+                const gradeCount = gradesContainer.querySelectorAll(".grade").length;
+                const newGrade = document.createElement("div");
+                newGrade.classList.add("grade");
+
+                newGrade.innerHTML = `
+        <div class="grade row">
+            <div class="col-md-4">
+                <label for="grade${gradeCount + 1}_date">Grade Date:</label>
+                <input type="datetime-local" class="form-control" name="grades[${gradeCount}][date]" required />
+            </div>
+            <div class="col-md-4">
+                <label for="grade${gradeCount + 1}_grade">Grade:</label>
+                <input type="text" name="grades[${gradeCount}][grade]" class="form-control" required />
+            </div>
+            <div class="col-md-4">
+                <label for="grade${gradeCount + 1}_score">Score:</label>
+                <input type="text" name="grades[${gradeCount}][score]" class="form-control" required />
+            </div>
+        </div>
+    `;
+
+                gradesContainer.appendChild(newGrade);
+            });
 
 
-</div>
+            document
+                .getElementById("remove-grade")
+                .addEventListener("click", function () {
+                    const gradesContainer = document.getElementById("grades-container");
+                    const lastGrade = gradesContainer.lastElementChild;
 
-<script>
-    document.getElementById('add-grade').addEventListener('click', function() {
-        const gradesContainer = document.getElementById('grades-container');
-        const newGrade = document.createElement('div');
-        newGrade.classList.add('grade');
-
-        newGrade.innerHTML = `
-            <label for="grade_date">Grade Date:</label>
-            <input type="datetime-local" name="grades[][date]" required>
-
-            <label for="grade_grade">Grade:</label>
-            <input type="text" name="grades[][grade]" required>
-
-            <label for="grade_score">Score:</label>
-            <input type="text" name="grades[][score]" required>
-        `;
-
-        gradesContainer.appendChild(newGrade);
-    });
-
-    document.getElementById('remove-grade').addEventListener('click', function() {
-        const gradesContainer = document.getElementById('grades-container');
-        const lastGrade = gradesContainer.lastElementChild;
-
-        if (lastGrade && lastGrade.classList.contains('grade')) {
-            gradesContainer.removeChild(lastGrade);
-        }
-    });
-</script>
-<%- include('./partials/footer.ejs') %>
+                    if (lastGrade && lastGrade.classList.contains("grade")) {
+                        gradesContainer.removeChild(lastGrade);
+                    }
+                });
+        </script>
+        <%- include('./partials/footer.ejs') %>

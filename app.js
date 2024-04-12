@@ -2,8 +2,11 @@ require("dotenv").config();
 
 const express = require("express");
 const ejs = require("ejs");
-const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const session = require("express-session");
+// const MongoDbSession = require("connect-mongodb-session")(session);
+
 const { query, validationResult } = require("express-validator");
 
 const Restaurants = require("./model/Restaurants");
@@ -14,6 +17,11 @@ const app = express();
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.use(session({
+    secret: 'test',
+    resave: false,
+    saveUninitialized: false
+}))
 
 const PORT = process.env.PORT || 4000;
 const DBURI = process.env.MONGO_URI;
@@ -23,6 +31,14 @@ const validateQueryParams = [
     query("perPage").isInt({ min: 1 }).toInt(),
     query("borough").optional().isString(),
 ];
+
+const isAuth = (req, res, next) => {
+    if(req.session.isAuth) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}
 
 // conntect with the database
 mongoose
@@ -40,37 +56,83 @@ app.get('/register', (req, res) => {
     res.render('register', {title: 'Register', errors: []});
 })
 
-app.post('/register', (req, res) => {
-    const {firstName, lastName, email, password} = req.body;
+app.post('/register', async (req, res) => {
+    const { firstName, lastName, email, password } = req.body;
 
-    const errors = []
+    const errors = [];
 
-    if(firstName == '' || lastName == '' || email == '' || password == ''){
+    if (firstName == '' || lastName == '' || email == '' || password == '') {
         errors.push('Empty Fields');
+    }
+
+    // console.log(email);
+    let user = await Users.findOne({ email });
+
+    if (user !== null) {
+        errors.push('User Already Exists!');
     }
 
     if (errors.length > 0) {
         res.render('register', { title: 'Register', errors });
+    } else {
+        try {
+            const hashedPassword = await bcrypt.hash(password, 12);
+
+            user = new Users({
+                firstName,
+                lastName,
+                email,
+                password: hashedPassword
+            });
+
+            await user.save();
+            res.redirect('/login');
+        } catch (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+        }
     }
-})
+});
 
 app.get('/login', (req, res) => {
     res.render('login', {title: 'Login', errors: []});
 })
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
     const {email, password} = req.body;
 
-    const errors = []
+    const errors = [];
 
     if(email == '' || password == ''){
         errors.push('Empty Fields');
     }
 
+    let user = await Users.findOne({email});
+
+    if(user === null) {
+        errors.push('User does not Exist!');
+    } else {
+        const isMatchedPassword = await bcrypt.compare(password, user.password);
+
+        if(!isMatchedPassword) {
+            errors.push('Password does not match!');
+        }
+    }
+
     if (errors.length > 0) {
         res.render('login', { title: 'Login', errors });
+    } else {
+        req.session.user = user;
+        req.session.isAuth = true;
+        res.redirect('/');
     }
-})
+});
+
+app.post('/logout', (req, res) => {
+    req.session.destroy(); 
+    res.redirect('/login');
+});
+
 
 ////////////////////////////////////////////////////////////////
 
@@ -109,7 +171,7 @@ app.get("/api/restaurants/find", validateQueryParams, async (req, res) => {
             .limit(perPage);
 
         res.render("test", {
-            title: "t",
+            title: "Search",
             restaurants,
             page,
             perPage,
@@ -143,15 +205,11 @@ app.post("/getRestaurants", (req, res) => {
         });
         return;
     }
-
+    
     Restaurants.findById(id)
         .then((result) => {
             if (result) {
-                res.render("getRestaurants", {
-                    title: "Restaurants",
-                    data: result,
-                    message: "",
-                });
+                res.render('findRestaurant', {title: "Resturant Info", restaurant: result});
             } else {
                 res.render("getRestaurants", {
                     title: "Restaurants",
@@ -172,8 +230,8 @@ app.get("/addRestaurants", (req, res) => {
 
 app.post("/addRestaurants", (req, res) => {
     const newData = {
-        building: req.body.building,
         address: {
+            building: req.body.building,
             coord: [parseFloat(req.body.longitude), parseFloat(req.body.latitude)],
             street: req.body.street,
             zipcode: req.body.zipcode,
@@ -182,11 +240,15 @@ app.post("/addRestaurants", (req, res) => {
         cuisine: req.body.cuisine,
         name: req.body.name,
         restaurant_id: req.body.restaurant_id,
+        // Ensure grades array is properly formatted
         grades: req.body.grades.map((grade) => ({
-            date: new Date(grade.date),
-            grade: grade.grade,
-            score: parseInt(grade.score),
-        })),
+            // Parse date string to Date object, handle invalid dates
+            date: new Date(grade.date) || null,
+            // Ensure grade is a string, handle invalid grades
+            grade: typeof grade.grade === 'string' ? grade.grade : null,
+            // Parse score to integer, handle invalid scores
+            score: parseInt(grade.score) || null,
+        })).filter(grade => grade.date && grade.grade && !isNaN(grade.score)),
     };
 
     Restaurants.create(newData)
@@ -214,8 +276,8 @@ app.get("/updateResturant/:id", (req, res) => {
 app.post("/updateResturant", (req, res) => {
     const id = req.body.id;
     const newData = {
-        building: req.body.building,
         address: {
+            building: req.body.building,
             coord: [parseFloat(req.body.longitude), parseFloat(req.body.latitude)],
             street: req.body.street,
             zipcode: req.body.zipcode,
@@ -244,15 +306,24 @@ app.get("/deleteResturant/:id", (req, res) => {
         .catch((err) => console.log(err));
 });
 
+app.get("/findResturant/:id", (req, res) => {
+    const id = req.params.id;
+
+    Restaurants.findById(id)
+        .then((result) => res.render('findRestaurant', {title: "Resturant Info", restaurant: result}))
+        .catch((err) => console.log(err));
+})
+
 app.get("/about", (req, res) => {
     res.render('about', {title: "About Us"})
 })
 
-app.get("/", (req, res) => {
+app.get("/", isAuth ,(req, res) => {
+    const user = req.session.user;
     Restaurants.find()
-        .limit(10)
+        .limit(9)
         .then((result) =>
-            res.render("index", { title: "ALL", restaurants: result })
+            res.render("index", { title: "ALL", restaurants: result, user })
         )
         .catch((err) => console.log(err));
 });

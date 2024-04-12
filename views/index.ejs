@@ -1,47 +1,42 @@
 <%- include('partials/header.ejs') %>
 
 <%- include('partials/navbar.ejs') %>
+<div class="container mt-5 d-flex justify-content-between align-items-center">
+  <div>
+    <h3 class="heading">User: <span><%= user.firstName %></span></h3>
+  </div> <!-- Empty div to create space on the left -->
+  <form action="/logout" method="post">
+    <button type="submit" class="btn btn-outline-primary">Logout</button>
+  </form>
+</div>
 
-<div class="container mt-5">
-    <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Restaurant Id</th>
-            <th scope="col">Name</th>
-            <th scope="col">Borough</th>
-            <th scope="col">Cuisine</th>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-            <% let counter = 1 %>
-            <% restaurants.forEach(restaurant => {  %>
-          <tr>
-            <th scope="row"><%= counter++ %></th>
-            <td>                
-                <form action="/findResturant/<%= restaurant._id %>" method="get">
-                    <a type="submit" onmouseover="this.style.color='red';" onmouseout="this.style.color='black'"><%= restaurant.restaurant_id %></a>
-                </form>
-            </td>
-            <td><%= restaurant.name %></td>
-            <td><%= restaurant.borough %></td>
-            <td><%= restaurant.cuisine %></td>
-            <td>
-                <form action="/updateResturant/<%= restaurant._id %>" method="get">
-                    <button type="submit" class="btn btn-success">UPDATE</button>
-                </form>
-            </td>
-            <td>
-                <form action="/deleteResturant/<%= restaurant._id %>" method="get">
-                    <button type="submit" class="btn btn-danger">DELETE</button>
-                </form>
-            </td>
-          </tr>          
-          <% }) %> 
-        </tbody>
-      </table>
+<div class="container mt-5 mb-5">
+  <div class="row">
+    <% restaurants.forEach(restaurant => {  %>
+      <div class="col-md-4 mb-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><%= restaurant.name %></h5>
+            <form action="/findResturant/<%= restaurant._id %>" method="get">
+              <p class="card-text">Restaurant Id: 
+                <button class="findButton" type="submit" onmouseover="this.style.color='red';" onmouseout="this.style.color='black'"><%= restaurant.restaurant_id %></button>            
+            </p></form>
+            <p class="card-text m-0">Borough: <%= restaurant.borough %></p>
+            <p class="card-text">Cuisine: <%= restaurant.cuisine %></p>
+            <div>        
+              <form action="/updateResturant/<%= restaurant._id %>" method="get" class="d-inline">
+                  <button class="btn btn-success">Update</button>
+              </form>
+              <form action="/deleteResturant/<%= restaurant._id %>" method="get" class="d-inline">
+                  <button class="btn btn-danger">Delete</button>
+              </form>
+          </div>
+
+          </div>
+        </div>
+      </div>
+    <% }) %> 
+  </div>
 </div>
 
 <%- include('partials/footer.ejs') %>

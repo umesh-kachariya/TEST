@@ -1,0 +1,24 @@
+.findButton{
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    color: inherit;
+    outline: inherit;
+    text-decoration: none;
+}
+
+.heading {
+    color: hsl(0, 0%, 28%);
+    font-weight: bold;
+    font-family: monospace;
+    letter-spacing: 7px;
+    cursor: pointer;
+  }
+
+.heading:hover span {
+    /* color: #ffd700; */
+    color: limegreen;
+}
