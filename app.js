@@ -224,7 +224,7 @@ app.post("/getRestaurants", (req, res) => {
         });
 });
 
-app.get("/addRestaurants", (req, res) => {
+app.get("/addRestaurants", isAuth, (req, res) => {
     res.render("addRestaurant", { title: "Add Restaurant", message: "" });
 });
 
