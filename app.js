@@ -4,6 +4,7 @@ const express = require("express");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const session = require("express-session");
 // const MongoDbSession = require("connect-mongodb-session")(session);
 
@@ -39,6 +40,22 @@ const isAuth = (req, res, next) => {
         res.redirect('/login');
     }
 }
+
+const isAuthjWT = (req, res, next) => {
+    const token = req.session.token;
+    if (token) {
+        jwt.verify(token, process.env.SECRETKEY, (err, decoded) => {
+            if (err) {
+                res.redirect('/login');
+            } else {
+                req.user = decoded;
+                next();
+            }
+        });
+    } else {
+        res.redirect('/login');
+    }
+};
 
 // conntect with the database
 mongoose
@@ -122,6 +139,9 @@ app.post('/login', async (req, res) => {
     if (errors.length > 0) {
         res.render('login', { title: 'Login', errors });
     } else {
+        const token = jwt.sign({ userId: user._id }, process.env.SECRETKEY); // ADDED
+        req.session.token = token; // ADDED
+
         req.session.user = user;
         req.session.isAuth = true;
         res.redirect('/');
@@ -318,7 +338,7 @@ app.get("/about", (req, res) => {
     res.render('about', {title: "About Us"})
 })
 
-app.get("/", isAuth ,(req, res) => {
+app.get("/", isAuthjWT ,(req, res) => {
     const user = req.session.user;
     Restaurants.find()
         .limit(9)
